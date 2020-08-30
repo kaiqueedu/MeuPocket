@@ -3,7 +3,6 @@ package br.pro.ednilsonrossi.meupocket.view;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,29 +21,18 @@ import br.pro.ednilsonrossi.meupocket.model.Site;
  */
 public class ItemSiteAdapter extends RecyclerView.Adapter<ItemSiteAdapter.SitesViewHolder> {
 
-    //A fonte de dados está em nossa implementação
-    private List<Site> siteList;
-
-    //Aqui implementamos um objeto que será responsável pelo tratamento do clique
-    //no item de nosso RecyclerView
     private static RecyclerItemClickListener clickListener;
+    private List<Site> siteList;
 
     //Construtor
     public ItemSiteAdapter(List<Site> siteList) {
         this.siteList = siteList;
     }
 
-    //Método setClickListener receberá a implamentação do clique no elemento da lista.
-    //Essa implementação é forncedida MainActivity, por exemplo.
     public void setClickListener(RecyclerItemClickListener clickListener) {
         ItemSiteAdapter.clickListener = clickListener;
     }
 
-    /*
-    Esse método precisa ser sobrescrito para que o tratamento adequado dos itens da RecyclerView
-    seja realizado. Aqui configuraremos qual o layout que será utilizado e inflaremos esse layout.
-    Tudo aqui é definido no ViewHolder.
-     */
     @NonNull
     @Override
     public SitesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -54,24 +42,15 @@ public class ItemSiteAdapter extends RecyclerView.Adapter<ItemSiteAdapter.SitesV
         return viewHolder;
     }
 
-
-    /*
-    Esse método é chamado sempre que um item do RecyclerView é apresentado, assim ele é responsável
-    por reciclar os elementos de layout e configurar o que será apresentado na tela do aplicativo.
-     */
     @Override
     public void onBindViewHolder(@NonNull SitesViewHolder holder, final int position) {
         holder.tituloTextView.setText(siteList.get(position).getTitulo());
-        holder.enderecoTextView.setText(siteList.get(position).getTitulo());
-        if(siteList.get(position).isFavorito())
+        holder.enderecoTextView.setText(siteList.get(position).getEndereco());
+        if (siteList.get(position).isFavorito())
             holder.favoritoImageView.setImageResource(R.drawable.ic_favorito);
         else
             holder.favoritoImageView.setImageResource(R.drawable.ic_nao_favorito);
 
-        /*
-        Aqui tratamos o clique na imnagem, observe que o ImageView é um elemento do item do RecyclerView,
-        assim, tratamos o onClickListener normalmente.
-         */
         holder.favoritoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,36 +59,25 @@ public class ItemSiteAdapter extends RecyclerView.Adapter<ItemSiteAdapter.SitesV
         });
     }
 
-
-    /*
-    Como a fonte de dados não está na classe pai nosso adapter é quem deve devolver a quantidade
-    de elementos. Esse método é que define o tamanho de nossa RecyclerView e é consultado sempre
-    que a lista é rolada. Definir um valor inválido aqui pode causar falhas graves em nosso app.
-     */
     @Override
     public int getItemCount() {
         return siteList.size();
     }
 
+    private void onEstrelaClique(int position) {
+        if (siteList.get(position).isFavorito())
+            siteList.get(position).undoFavorite();
+        else
+            siteList.get(position).doFavotite();
+        notifyDataSetChanged();
+    }
 
-    /*
-    A inner class SitesViewHolder continua seguindo o mesmo padrão de projeto, contudo agora
-    ela deve estender a classe ViewHolder do pacote RecyclerView.
-     */
-    /*
-    Como queremos tratar o clique no item da RecyclerView temos que implementar o OnClickListener
-    do pacote View.
-     */
-    public static class SitesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        //Os atributos disponíveis no layout
+    public static class SitesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         public TextView tituloTextView;
         public TextView enderecoTextView;
         public ImageView favoritoImageView;
 
-
-        /*
-        O Construtor recupera os elementos de layout
-         */
         public SitesViewHolder(@NonNull View itemView) {
             super(itemView);
             tituloTextView = itemView.findViewById(R.id.text_titulo);
@@ -118,25 +86,11 @@ public class ItemSiteAdapter extends RecyclerView.Adapter<ItemSiteAdapter.SitesV
             itemView.setOnClickListener(this);
         }
 
-        /*
-        Aqui tratamos o clique no item e não em elementos do item.
-         */
         @Override
         public void onClick(View view) {
             if (clickListener != null)
                 clickListener.onItemClick(getAdapterPosition());
         }
-    }
-
-    /*
-    Configuramos se o objeto é ou não favorito
-     */
-    private void onEstrelaClique(int position) {
-        if (siteList.get(position).isFavorito())
-            siteList.get(position).undoFavorite();
-        else
-            siteList.get(position).doFavotite();
-        notifyDataSetChanged();
     }
 
 }

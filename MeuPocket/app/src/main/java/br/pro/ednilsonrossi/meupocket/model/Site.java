@@ -48,14 +48,14 @@ public class Site {
     /**
      * Torna o site um favorito.
      */
-    public void doFavotite(){
+    public void doFavotite() {
         this.favorito = true;
     }
 
     /**
      * Faz com que o site não seja mais favorito.
      */
-    public void undoFavorite(){
+    public void undoFavorite() {
         this.favorito = false;
     }
 
